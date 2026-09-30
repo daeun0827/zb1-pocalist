@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZEROBASEONE POCALIST</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7f7f9;
+  color: #222;
+}
+
+header {
+  background: white;
+  padding: 25px;
+  border-bottom: 1px solid #ddd;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+header p {
+  color: #777;
+  margin-bottom: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 25px;
+}
+
+.stats {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.stats strong {
+  font-size: 25px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+input, select, button {
+  padding: 11px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  font-size: 14px;
+}
+
+input {
+  width: 250px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f0f0f0;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.card.owned {
+  border-color: #222;
+}
+
+.card-image {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 13px;
+}
+
+.card-info {
+  padding: 13px;
+}
+
+.card-info h3 {
+  margin: 0 0 7px;
+  font-size: 16px;
+}
+
+.card-info p {
+  margin: 4px 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.check {
+  width: 100%;
+  margin-top: 10px;
+  background: #222;
+  color: white;
+  border: none;
+}
+
+.card.owned .check {
+  background: #ddd;
+  color: #222;
+}
+
+@media (max-width: 600px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  input {
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <h1>ZEROBASEONE POCALIST</h1>
+    <p>나의 제로베이스원 포토카드 체크리스트</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="stats">
+    <div>보유 포카</div>
+    <strong><span id="ownedCount">0</span> / <span id="totalCount">0</span></strong>
+    <div id="percent">0%</div>
+  </div>
+
+  <div class="controls">
+
+    <input
+      type="text"
+      id="search"
+      placeholder="앨범, 멤버 검색"
+    >
+
+    <select id="member">
+      <option value="all">멤버 전체</option>
+      <option value="성한빈">성한빈</option>
+      <option value="김지웅">김지웅</option>
+      <option value="장하오">장하오</option>
+      <option value="석매튜">석매튜</option>
+      <option value="김태래">김태래</option>
+      <option value="리키">리키</option>
+      <option value="김규빈">김규빈</option>
+      <option value="박건욱">박건욱</option>
+      <option value="한유진">한유진</option>
+    </select>
+
+    <select id="album">
+      <option value="all">앨범 전체</option>
+      <option value="YOUTH IN THE SHADE">YOUTH IN THE SHADE</option>
+      <option value="MELTING POINT">MELTING POINT</option>
+      <option value="You had me at HELLO">You had me at HELLO</option>
+    </select>
+
+    <button id="ownedFilter">보유 포카만</button>
+    <button id="missingFilter">미보유 포카만</button>
+    <button id="allFilter">전체 보기</button>
+
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+</main>
+
+<script>
+
+const cards = [
+
+  {
+    id: "zb1-001",
+    member: "성한빈",
+    album: "YOUTH IN THE SHADE",
+    version: "SUNSHOWER"
+  },
+
+  {
+    id: "zb1-002",
+    member: "김지웅",
+    album: "YOUTH IN THE SHADE",
+    version: "SUNSHOWER"
+  },
+
+  {
+    id: "zb1-003",
+    member: "장하오",
+    album: "YOUTH IN THE SHADE",
+    version: "SUNSHOWER"
+  },
+
+  {
+    id: "zb1-004",
+    member: "석매튜",
+    album: "YOUTH IN THE SHADE",
+    version: "SUNSHOWER"
+  },
+
+  {
+    id: "zb1-005",
+    member: "김태래",
+    album: "YOUTH IN THE SHADE",
+    version: "SUNSHOWER"
+  },
+
+  {
+    id: "zb1-006",
+    member: "리키",
+    album: "YOUTH IN THE SHADE",
+    version: "SUNSHOWER"
+  },
+
+  {
+    id: "zb1-007",
+    member: "김규빈",
+    album: "YOUTH IN THE SHADE",
+    version: "SUNSHOWER"
+  },
+
+  {
+    id: "zb1-008",
+    member: "박건욱",
+    album: "YOUTH IN THE SHADE",
+    version: "SUNSHOWER"
+  },
+
+  {
+    id: "zb1-009",
+    member: "한유진",
+    album: "YOUTH IN THE SHADE",
+    version: "SUNSHOWER"
+  },
+
+  {
+    id: "zb1-010",
+    member: "성한빈",
+    album: "MELTING POINT",
+    version: "FAIRYTALE"
+  },
+
+  {
+    id: "zb1-011",
+    member: "김지웅",
+    album: "MELTING POINT",
+    version: "FAIRYTALE"
+  },
+
+  {
+    id: "zb1-012",
+    member: "장하오",
+    album: "MELTING POINT",
+    version: "FAIRYTALE"
+  },
+
+  {
+    id: "zb1-013",
+    member: "석매튜",
+    album: "You had me at HELLO",
+    version: "HELLO"
+  },
+
+  {
+    id: "zb1-014",
+    member: "김태래",
+    album: "You had me at HELLO",
+    version: "HELLO"
+  },
+
+  {
+    id: "zb1-015",
+    member: "리키",
+    album: "You had me at HELLO",
+    version: "HELLO"
+  }
+
+];
+
+let owned = JSON.parse(localStorage.getItem("zb1-owned") || "[]");
+let filterMode = "all";
+
+const cardsContainer = document.getElementById("cards");
+const searchInput = document.getElementById("search");
+const memberSelect = document.getElementById("member");
+const albumSelect = document.getElementById("album");
+
+function render() {
+
+  const search = searchInput.value.toLowerCase();
+  const member = memberSelect.value;
+  const album = albumSelect.value;
+
+  const filtered = cards.filter(card => {
+
+    const matchesSearch =
+      card.member.toLowerCase().includes(search) ||
+      card.album.toLowerCase().includes(search) ||
+      card.version.toLowerCase().includes(search);
+
+    const matchesMember =
+      member === "all" || card.member === member;
+
+    const matchesAlbum =
+      album === "all" || card.album === album;
+
+    const isOwned = owned.includes(card.id);
+
+    const matchesFilter =
+      filterMode === "all" ||
+      (filterMode === "owned" && isOwned) ||
+      (filterMode === "missing" && !isOwned);
+
+    return matchesSearch &&
+           matchesMember &&
+           matchesAlbum &&
+           matchesFilter;
+  });
+
+  cardsContainer.innerHTML = "";
+
+  filtered.forEach(card => {
+
+    const isOwned = owned.includes(card.id);
+
+    const div = document.createElement("div");
+
+    div.className = "card" + (isOwned ? " owned" : "");
+
+    div.innerHTML = `
+      <div class="card-image">
+        포카 이미지
+      </div>
+
+      <div class="card-info">
+
+        <h3>${card.member}</h3>
+
+        <p>${card.album}</p>
+
+        <p>${card.version}</p>
+
+        <button class="check">
+          ${isOwned ? "✓ 보유함" : "보유 체크"}
+        </button>
+
+      </div>
+    `;
+
+    div.querySelector(".check").addEventListener("click", () => {
+      toggleOwned(card.id);
+    });
+
+    cardsContainer.appendChild(div);
+  });
+
+  updateStats();
+}
+
+function toggleOwned(id) {
+
+  if (owned.includes(id)) {
+    owned = owned.filter(x => x !== id);
+  } else {
+    owned.push(id);
+  }
+
+  localStorage.setItem("zb1-owned", JSON.stringify(owned));
+
+  render();
+}
+
+function updateStats() {
+
+  document.getElementById("ownedCount").textContent = owned.length;
+  document.getElementById("totalCount").textContent = cards.length;
+
+  const percent =
+    cards.length === 0
+      ? 0
+      : Math.round((owned.length / cards.length) * 100);
+
+  document.getElementById("percent").textContent =
+    percent + "% 보유";
+}
+
+searchInput.addEventListener("input", render);
+memberSelect.addEventListener("change", render);
+albumSelect.addEventListener("change", render);
+
+document.getElementById("ownedFilter").onclick = () => {
+  filterMode = "owned";
+  render();
+};
+
+document.getElementById("missingFilter").onclick = () => {
+  filterMode = "missing";
+  render();
+};
+
+document.getElementById("allFilter").onclick = () => {
+  filterMode = "all";
+  render();
+};
+
+render();
+
+</script>
+
+</body>
+</html>
