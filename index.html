@@ -370,6 +370,7 @@ function render() {
 
     div.className = "card" + (isOwned ? " owned" : "");
 
+    div.innerHTML = `
     <div class="card-image">
   ${card.image ? `<img src="${card.image}" alt="${card.member} 포토카드">` : "포카 이미지"}
 </div>
